@@ -27,7 +27,7 @@ This system implements an intelligent, multi-agent content creation pipeline tha
 
 ```bash
 # Clone or download this repository
-cd contentScaling
+cd ai-content-studio
 
 # Install dependencies
 pip install -r requirements.txt
@@ -62,7 +62,7 @@ Follow the interactive prompts to guide your content through each stage!
 ## 📁 Project Structure
 
 ```
-contentScaling/
+AI-Content-Studio/
 ├── main.py                 # Entry point
 ├── workflow.py             # Workflow orchestrator
 ├── config.py               # Configuration settings

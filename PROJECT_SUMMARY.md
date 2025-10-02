@@ -35,7 +35,7 @@ This project implements the complete 3-agent content creation workflow designed 
 ## 📁 Complete File Structure
 
 ```
-contentScaling/
+AI-Content-Studio/
 ├── 📄 Core Application Files
 │   ├── main.py                  # Entry point
 │   ├── workflow.py              # Orchestrator with approval gates

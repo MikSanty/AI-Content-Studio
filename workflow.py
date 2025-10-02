@@ -9,7 +9,7 @@ from utils import (
     display_content
 )
 
-class ContentScalingWorkflow:
+class AIContentStudioWorkflow:
     """Orchestrates the 3-agent content creation workflow."""
     
     def __init__(self):

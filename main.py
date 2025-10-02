@@ -1,6 +1,6 @@
 """Main entry point for AI-Content-Studio Workflow."""
 import sys
-from workflow import ContentScalingWorkflow
+from workflow import AIContentStudioWorkflow
 from utils import print_header, print_error, print_info
 from colorama import Fore, Style
 
@@ -17,7 +17,7 @@ def main():
     print()
     
     try:
-        workflow = ContentScalingWorkflow()
+        workflow = AIContentStudioWorkflow()
         workflow.run()
     except ValueError as e:
         print_error(str(e))
