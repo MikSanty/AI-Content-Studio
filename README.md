@@ -257,10 +257,6 @@ What would you like to do?
 Final article saved to: outputs/20251002_143022/FINAL_ARTICLE.md
 ```
 
-## 🤝 Contributing
-
-This is based on the brainstorming session documented in `brainstorm-session-result.md`.
-
 ## 📄 License
 
 Free to use and modify for your content creation needs.
