@@ -9,7 +9,7 @@ def setup_env():
     print()
     
     if os.path.exists('.env'):
-        print("⚠️  .env file already exists!")
+        print("[WARNING] .env file already exists!")
         response = input("Do you want to overwrite it? (yes/no): ").strip().lower()
         if response not in ['yes', 'y']:
             print("Setup cancelled.")

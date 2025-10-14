@@ -24,7 +24,7 @@ def write_file(filepath, content):
     ensure_dir(os.path.dirname(filepath))
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
-    print(f"{Fore.GREEN}✓ Saved: {filepath}{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}[OK] Saved: {filepath}{Style.RESET_ALL}")
 
 def get_timestamp():
     """Get current timestamp for file naming."""
@@ -38,21 +38,21 @@ def print_header(text):
 
 def print_section(text):
     """Print a styled section header."""
-    print(f"\n{Fore.YELLOW}{'─'*60}")
+    print(f"\n{Fore.YELLOW}{'-'*60}")
     print(f"{Fore.YELLOW}{text}")
-    print(f"{Fore.YELLOW}{'─'*60}{Style.RESET_ALL}\n")
+    print(f"{Fore.YELLOW}{'-'*60}{Style.RESET_ALL}\n")
 
 def print_success(text):
     """Print success message."""
-    print(f"{Fore.GREEN}✓ {text}{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}[OK] {text}{Style.RESET_ALL}")
 
 def print_error(text):
     """Print error message."""
-    print(f"{Fore.RED}✗ {text}{Style.RESET_ALL}")
+    print(f"{Fore.RED}[ERROR] {text}{Style.RESET_ALL}")
 
 def print_info(text):
     """Print info message."""
-    print(f"{Fore.BLUE}ℹ {text}{Style.RESET_ALL}")
+    print(f"{Fore.BLUE}[INFO] {text}{Style.RESET_ALL}")
 
 def get_user_choice(prompt, options):
     """Get user choice from options."""

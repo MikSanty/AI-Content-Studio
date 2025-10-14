@@ -97,6 +97,7 @@ Location: `examples/` directory
 | `SETUP.md` | First-time users | Detailed instructions |
 | `WORKFLOW_DIAGRAM.md` | Visual learners | Flow diagrams |
 | `PROJECT_SUMMARY.md` | Overview | Implementation details |
+| `CHANGELOG.md` | Developers | Version history & changes |
 | `INDEX.md` | This file | File navigation |
 | `brainstorm-session-result.md` | Context | Original design |
 
@@ -246,11 +247,12 @@ python test_setup.py
 ---
 
 **Quick Links:**
-- 🚀 [Quick Start](QUICK_START.md)
-- 📖 [Full Documentation](README.md)
-- 🔧 [Setup Guide](SETUP.md)
-- 📊 [Workflow Diagram](WORKFLOW_DIAGRAM.md)
-- 📋 [Project Summary](PROJECT_SUMMARY.md)
+- 🚀 [Quick Start](guides/QUICK_START.md)
+- 📖 [Full Documentation](../README.md)
+- 🔧 [Setup Guide](setup/SETUP.md)
+- 📊 [Workflow Diagram](guides/WORKFLOW_DIAGRAM.md)
+- 📋 [Project Summary](project/PROJECT_SUMMARY.md)
+- 📝 [Changelog](project/CHANGELOG.md)
 
 ---
 

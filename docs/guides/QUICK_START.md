@@ -11,14 +11,35 @@ pip install -r requirements.txt
 
 ### 2. Set Up API Key (2 minutes)
 
-**Option A: Automated Setup**
-```bash
-python setup_env.py
-```
+**Option A: OpenAI (Recommended for Quality)**
+1. Get API key: https://platform.openai.com/api-keys
+2. Copy `.env.example` to `.env`
+3. Add your OpenAI key and models to `.env`:
+   ```
+   AI_PROVIDER=openai
+   OPENAI_API_KEY=your_key_here
+   OPENAI_WRITER_MODEL=gpt-5-nano
+   OPENAI_LLMON_MODEL=gpt-4o-mini
+   OPENAI_EDITOR_MODEL=gpt-4.1-mini
+   ```
+   
+   **Note**: Each agent can use a different model for specialized performance.
+   You can also use the same model for all three agents.
 
-**Option B: Manual Setup**
+**Option B: Gemini (Free Tier)**
 1. Get free key: https://makersuite.google.com/app/apikey
-2. Create `.env` file with: `GEMINI_API_KEY=your_key_here`
+2. Copy `.env.example` to `.env`
+3. Add your Gemini key to `.env`:
+   ```
+   AI_PROVIDER=gemini
+   GEMINI_API_KEY=your_key_here
+   ```
+
+**Model Recommendations:**
+- **GPT-4o**: Best cost/quality balance (~$0.43/article, ~23 articles per $10)
+- **GPT-4-turbo**: Higher quality, more expensive (~$1.40/article)
+- **GPT-3.5-turbo**: Most economical but lower quality (~$0.07/article)
+- **Gemini 2.5 Flash**: Free tier, good quality
 
 ### 3. Fill Content Brief (2 minutes)
 
@@ -185,21 +206,43 @@ python --version
 
 ---
 
+## 🔄 Switching AI Providers
+
+The system supports both OpenAI and Gemini. To switch providers:
+
+1. Open your `.env` file
+2. Change the `AI_PROVIDER` setting:
+   ```
+   # For OpenAI
+   AI_PROVIDER=openai
+   
+   # For Gemini
+   AI_PROVIDER=gemini
+   ```
+3. Ensure you have the corresponding API key set
+4. Run the workflow normally
+
+**Cost Comparison (per complete article):**
+- OpenAI (multi-model setup): Varies based on chosen models
+  - Example: gpt-5-nano + gpt-4o-mini + gpt-4.1-mini
+- OpenAI (single model for all agents): ~$0.43 with gpt-4o ⭐ Best balance
+- Gemini 2.5 Flash: FREE (with daily limits)
+
+**Note**: OpenAI allows you to configure different models for each agent (Writer, LLMON, Editor),
+enabling you to optimize for cost and performance based on each agent's specific task.
+
 ## 🚀 Going to Production
 
 Once you're happy with test results:
 
-1. **Keep using Gemini** (free tier is generous)
-   
-   OR
+1. **Using OpenAI:** Monitor your usage at https://platform.openai.com/usage
+   - Set spending limits in your OpenAI account
+   - GPT-4o recommended for production (best cost/quality)
 
-2. **Upgrade to Claude/Anthropic:**
-   - Get API key from anthropic.com
-   - Install: `pip install anthropic`
-   - Update `api_client.py` to use Anthropic
-   - Add to `.env`: `ANTHROPIC_API_KEY=your_key`
+2. **Using Gemini:** Free tier is generous for moderate use
+   - Upgrade to paid tier if you hit rate limits
 
-The workflow logic stays the same - just better AI! 🎯
+The workflow logic stays the same - just different AI providers! 🎯
 
 ---
 

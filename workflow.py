@@ -9,6 +9,16 @@ from utils import (
     display_content
 )
 
+# Import enhancement modules if enabled
+if Config.ENABLE_QUALITY_SCORING:
+    from quality_analyzer import QualityAnalyzer
+
+if Config.ENABLE_WORKFLOW_MEMORY:
+    from workflow_memory import WorkflowMemory
+
+if Config.ENABLE_VARIATION_VALIDATION:
+    from variation_differentiator import VariationDifferentiator
+
 class AIContentStudioWorkflow:
     """Orchestrates the 3-agent content creation workflow."""
     
@@ -18,17 +28,44 @@ class AIContentStudioWorkflow:
         self.llmon = LLMONAgent()
         self.editor = EditorAgent()
         
+        # Initialize enhancement modules
+        self.quality_analyzer = QualityAnalyzer() if Config.ENABLE_QUALITY_SCORING else None
+        self.workflow_memory = WorkflowMemory(Config.MEMORY_DIR) if Config.ENABLE_WORKFLOW_MEMORY else None
+        self.differentiator = VariationDifferentiator(Config.MIN_VARIATION_DIFFERENCE) if Config.ENABLE_VARIATION_VALIDATION else None
+        
         # Initialize session tracking
         self.session_id = get_timestamp()
         self.session_dir = os.path.join(Config.OUTPUTS_DIR, self.session_id)
         ensure_dir(self.session_dir)
         
+        # Track template and reference paths for quality scoring
+        self.template_content = None
+        self.references_content = None
+        
         print_info(f"Session ID: {self.session_id}")
+        
+        # Display enabled enhancements
+        enhancements = []
+        if Config.ENABLE_OUTLINE_PHASE:
+            enhancements.append("Outline Generation")
+        if Config.ENABLE_PARALLEL_VARIATIONS:
+            enhancements.append("Parallel Processing")
+        if Config.ENABLE_QUALITY_SCORING:
+            enhancements.append("Quality Scoring")
+        if Config.ENABLE_WORKFLOW_MEMORY:
+            enhancements.append("Workflow Memory")
+        if Config.ENABLE_VARIATION_VALIDATION:
+            enhancements.append("Variation Validation")
+        if Config.ENABLE_MULTIPASS_EDITING:
+            enhancements.append("Multi-Pass Editing")
+        
+        if enhancements:
+            print_info(f"Active Enhancements: {', '.join(enhancements)}")
     
     def run(self):
         """Execute the complete workflow."""
         print_header("AI-Content-Studio WORKFLOW")
-        print_info("3-Agent Pipeline: WRITER → LLMON → EDITOR")
+        print_info("3-Agent Pipeline: WRITER -> LLMON -> EDITOR")
         
         try:
             # Stage 1: Writer Agent
@@ -59,7 +96,7 @@ class AIContentStudioWorkflow:
             print_error(f"Workflow error: {str(e)}")
     
     def _writer_stage(self):
-        """Execute Writer agent stage with revision loop."""
+        """Execute Writer agent stage with optional outline and revision loop."""
         print_header("STAGE 1: WRITER AGENT")
         
         # Define input files
@@ -68,12 +105,38 @@ class AIContentStudioWorkflow:
         references_path = os.path.join(Config.TEMPLATES_DIR, "references.md")
         prompt_path = os.path.join(Config.TEMPLATES_DIR, "writer_prompt.md")
         
+        # Load template and references for quality scoring
+        if Config.ENABLE_QUALITY_SCORING:
+            from utils import read_file
+            self.template_content = read_file(template_path)
+            self.references_content = read_file(references_path)
+        
+        # Get historical context if memory is enabled
+        historical_context = ""
+        if self.workflow_memory:
+            historical_context = self.workflow_memory.get_context_for_agent('writer')
+        
+        # Outline phase (if enabled)
+        approved_outline = None
+        if Config.ENABLE_OUTLINE_PHASE:
+            approved_outline = self._outline_approval_loop(
+                manual_path, template_path, references_path, prompt_path, historical_context
+            )
+            if approved_outline is None:
+                return None
+        
+        # Draft generation
         print_info("Generating initial draft...")
         
         try:
-            draft = self.writer.generate_draft(
-                manual_path, template_path, references_path, prompt_path
-            )
+            if Config.ENABLE_OUTLINE_PHASE and approved_outline:
+                draft = self.writer.write_from_outline(
+                    approved_outline, manual_path, template_path, references_path, prompt_path
+                )
+            else:
+                draft = self.writer.generate_draft(
+                    manual_path, template_path, references_path, prompt_path
+                )
         except Exception as e:
             print_error(f"Failed to generate draft: {str(e)}")
             return None
@@ -82,6 +145,11 @@ class AIContentStudioWorkflow:
         draft_path = os.path.join(self.session_dir, "01_writer_draft.md")
         write_file(draft_path, draft)
         
+        # Show quality scores
+        if self.quality_analyzer:
+            scores = self.quality_analyzer.analyze(draft, self.template_content, self.references_content)
+            print(self.quality_analyzer.format_score_summary(scores))
+        
         # Revision loop
         revision_count = 0
         while True:
@@ -89,19 +157,29 @@ class AIContentStudioWorkflow:
             
             choice = get_user_choice(
                 "What would you like to do?",
-                ["✓ Approve and continue to LLMON", 
-                 "✎ Revise with feedback", 
-                 "✗ Reject and stop workflow"]
+                ["[OK] Approve and continue to LLMON", 
+                 "[EDIT] Revise with feedback", 
+                 "[STOP] Reject and stop workflow"]
             )
             
             if choice == 1:  # Approve
                 print_success("Draft approved!")
+                
+                # Record approval in memory
+                if self.workflow_memory:
+                    quality_scores = self.quality_analyzer.analyze(draft, self.template_content, self.references_content) if self.quality_analyzer else None
+                    self.workflow_memory.add_approval('writer', quality_scores)
+                
                 return draft
             
             elif choice == 2:  # Revise
                 feedback = get_user_input("Enter your revision feedback:")
                 if not feedback:
                     continue
+                
+                # Record feedback in memory
+                if self.workflow_memory:
+                    self.workflow_memory.add_feedback('writer', feedback, approved=False, content_snippet=draft)
                 
                 print_info("Generating revised draft...")
                 try:
@@ -115,15 +193,82 @@ class AIContentStudioWorkflow:
                     )
                     write_file(revision_path, draft)
                     
+                    # Show updated quality scores
+                    if self.quality_analyzer:
+                        scores = self.quality_analyzer.analyze(draft, self.template_content, self.references_content)
+                        print(self.quality_analyzer.format_score_summary(scores))
+                    
                 except Exception as e:
                     print_error(f"Revision failed: {str(e)}")
+            
+            elif choice == 3 or choice is None:  # Reject
+                print_error("Workflow stopped by user")
+                
+                # Record rejection in memory
+                if self.workflow_memory:
+                    self.workflow_memory.add_feedback('writer', "Rejected final draft", approved=False, content_snippet=draft)
+                
+                return None
+    
+    def _outline_approval_loop(self, manual_path, template_path, references_path, prompt_path, historical_context):
+        """Handle outline generation and approval."""
+        print_section("OUTLINE GENERATION PHASE")
+        print_info("Generating article outline...")
+        
+        try:
+            outline = self.writer.generate_outline(
+                manual_path, template_path, references_path, prompt_path, historical_context
+            )
+        except Exception as e:
+            print_error(f"Failed to generate outline: {str(e)}")
+            return None
+        
+        # Save outline
+        outline_path = os.path.join(self.session_dir, "01_writer_outline.md")
+        write_file(outline_path, outline)
+        
+        # Outline revision loop
+        revision_count = 0
+        while True:
+            display_content("ARTICLE OUTLINE", outline)
+            
+            choice = get_user_choice(
+                "What would you like to do with this outline?",
+                ["[OK] Approve and proceed to writing",
+                 "[EDIT] Revise outline with feedback",
+                 "[STOP] Reject and stop workflow"]
+            )
+            
+            if choice == 1:  # Approve
+                print_success("Outline approved!")
+                return outline
+            
+            elif choice == 2:  # Revise
+                feedback = get_user_input("Enter your outline revision feedback:")
+                if not feedback:
+                    continue
+                
+                print_info("Revising outline...")
+                try:
+                    outline = self.writer.revise_outline(outline, feedback)
+                    revision_count += 1
+                    
+                    # Save revised outline
+                    revised_outline_path = os.path.join(
+                        self.session_dir,
+                        f"01_writer_outline_rev{revision_count}.md"
+                    )
+                    write_file(revised_outline_path, outline)
+                    
+                except Exception as e:
+                    print_error(f"Outline revision failed: {str(e)}")
             
             elif choice == 3 or choice is None:  # Reject
                 print_error("Workflow stopped by user")
                 return None
     
     def _llmon_stage(self, article):
-        """Execute LLMON agent stage with iteration loop."""
+        """Execute LLMON agent stage with iteration loop and enhanced features."""
         print_header("STAGE 2: LLMON AGENT")
         
         rules_path = os.path.join(Config.RULES_DIR, "llmon_rules.md")
@@ -132,11 +277,16 @@ class AIContentStudioWorkflow:
         while True:
             print_info(f"Generating {Config.LLMON_VERSIONS_COUNT} article variations...")
             
+            if Config.ENABLE_PARALLEL_VARIATIONS:
+                print_info("Using parallel generation for faster processing...")
+            
             try:
-                if iteration_count == 0:
-                    variations = self.llmon.generate_variations(article, rules_path)
+                # Choose parallel or sequential generation
+                if Config.ENABLE_PARALLEL_VARIATIONS:
+                    variations = self.llmon.generate_variations_parallel(
+                        article, rules_path, self.differentiator
+                    )
                 else:
-                    # User has provided custom rules in previous iteration
                     variations = self.llmon.generate_variations(article, rules_path)
                 
             except Exception as e:
@@ -151,6 +301,22 @@ class AIContentStudioWorkflow:
                 )
                 write_file(var_path, variation)
             
+            # Show differentiation report
+            if self.differentiator:
+                diff_report = self.differentiator.get_differentiation_report(variations)
+                print(diff_report)
+            
+            # Show quality scores for each variation
+            if self.quality_analyzer:
+                print_section("VARIATION QUALITY SCORES")
+                for i, variation in enumerate(variations, 1):
+                    scores = self.quality_analyzer.analyze(variation, self.template_content, self.references_content)
+                    print(f"\n--- Variation {i} ---")
+                    print(f"Overall: {scores['overall_score']}/100 | "
+                          f"Readability: {scores['readability']['score']}/100 | "
+                          f"SEO: {scores['seo']['score']}/100 | "
+                          f"Engagement: {scores['engagement']['score']}/100")
+            
             # Display variations
             for i, variation in enumerate(variations, 1):
                 display_content(f"VARIATION {i}", variation, max_lines=25)
@@ -158,8 +324,8 @@ class AIContentStudioWorkflow:
             # User choice
             options = [f"Select Variation {i}" for i in range(1, len(variations) + 1)]
             options.extend([
-                "↻ Iterate with edited rules",
-                "✗ Reject all and stop workflow"
+                "[RETRY] Iterate with edited rules",
+                "[STOP] Reject all and stop workflow"
             ])
             
             choice = get_user_choice("What would you like to do?", options)
@@ -167,6 +333,12 @@ class AIContentStudioWorkflow:
             if choice and 1 <= choice <= len(variations):  # Select variation
                 selected = variations[choice - 1]
                 print_success(f"Variation {choice} selected!")
+                
+                # Record approval in memory
+                if self.workflow_memory:
+                    quality_scores = self.quality_analyzer.analyze(selected, self.template_content, self.references_content) if self.quality_analyzer else None
+                    self.workflow_memory.add_approval('llmon', quality_scores)
+                
                 return selected
             
             elif choice == len(variations) + 1:  # Iterate with edited rules
@@ -177,6 +349,10 @@ class AIContentStudioWorkflow:
                 custom_rules = get_user_input(
                     "Enter modified rules (or press Enter to use original rules):"
                 )
+                
+                # Record feedback in memory
+                if self.workflow_memory and custom_rules:
+                    self.workflow_memory.add_feedback('llmon', f"Requested iteration with custom rules", approved=False)
                 
                 if custom_rules:
                     # Save custom rules temporarily
@@ -192,25 +368,46 @@ class AIContentStudioWorkflow:
             
             else:  # Reject or cancel
                 print_error("Workflow stopped by user")
+                
+                # Record rejection in memory
+                if self.workflow_memory:
+                    self.workflow_memory.add_feedback('llmon', "Rejected all variations", approved=False)
+                
                 return None
     
     def _editor_stage(self, article):
-        """Execute Editor agent stage with revision option."""
+        """Execute Editor agent stage with multi-pass editing and revision option."""
         print_header("STAGE 3: EDITOR AGENT")
         
         rules_path = os.path.join(Config.RULES_DIR, "editor_rules.md")
         
-        print_info("Polishing article...")
-        
-        try:
-            polished = self.editor.polish_article(article, rules_path)
-        except Exception as e:
-            print_error(f"Failed to polish article: {str(e)}")
-            return None
+        # Choose single-pass or multi-pass editing
+        if Config.ENABLE_MULTIPASS_EDITING:
+            print_info("Polishing article with multi-pass editing...")
+            print_info("Pass 1: Grammar & Mechanics -> Pass 2: Style & Voice -> Pass 3: Flow & Transitions -> Pass 4: Final Consistency")
+            
+            try:
+                polished = self.editor.polish_article_multipass(article, rules_path)
+            except Exception as e:
+                print_error(f"Failed to polish article: {str(e)}")
+                return None
+        else:
+            print_info("Polishing article...")
+            
+            try:
+                polished = self.editor.polish_article(article, rules_path)
+            except Exception as e:
+                print_error(f"Failed to polish article: {str(e)}")
+                return None
         
         # Save polished version
         polished_path = os.path.join(self.session_dir, "03_editor_polished.md")
         write_file(polished_path, polished)
+        
+        # Show quality scores
+        if self.quality_analyzer:
+            scores = self.quality_analyzer.analyze(polished, self.template_content, self.references_content)
+            print(self.quality_analyzer.format_score_summary(scores))
         
         # Minor revision loop
         revision_count = 0
@@ -219,19 +416,32 @@ class AIContentStudioWorkflow:
             
             choice = get_user_choice(
                 "What would you like to do?",
-                ["✓ Approve as final output",
-                 "✎ Request minor revisions",
-                 "✗ Reject and stop workflow"]
+                ["[OK] Approve as final output",
+                 "[EDIT] Request minor revisions",
+                 "[STOP] Reject and stop workflow"]
             )
             
             if choice == 1:  # Approve
                 print_success("Article approved as final!")
+                
+                # Record approval in memory
+                if self.workflow_memory:
+                    quality_scores = self.quality_analyzer.analyze(polished, self.template_content, self.references_content) if self.quality_analyzer else None
+                    self.workflow_memory.add_approval('editor', quality_scores)
+                    
+                    # Extract and save preferences
+                    self.workflow_memory.extract_preferences()
+                
                 return polished
             
             elif choice == 2:  # Request revisions
                 revision_notes = get_user_input("Enter your revision requests:")
                 if not revision_notes:
                     continue
+                
+                # Record feedback in memory
+                if self.workflow_memory:
+                    self.workflow_memory.add_feedback('editor', revision_notes, approved=False, content_snippet=polished)
                 
                 print_info("Applying revisions...")
                 try:
@@ -245,11 +455,21 @@ class AIContentStudioWorkflow:
                     )
                     write_file(revision_path, polished)
                     
+                    # Show updated quality scores
+                    if self.quality_analyzer:
+                        scores = self.quality_analyzer.analyze(polished, self.template_content, self.references_content)
+                        print(self.quality_analyzer.format_score_summary(scores))
+                    
                 except Exception as e:
                     print_error(f"Revision failed: {str(e)}")
             
             elif choice == 3 or choice is None:  # Reject
                 print_error("Workflow stopped by user")
+                
+                # Record rejection in memory
+                if self.workflow_memory:
+                    self.workflow_memory.add_feedback('editor', "Rejected final polish", approved=False, content_snippet=polished)
+                
                 return None
 
 

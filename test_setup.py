@@ -14,11 +14,11 @@ def print_header(text):
 def print_test(name, passed, message=""):
     """Print test result."""
     if passed:
-        print(f"{Fore.GREEN}✓ {name}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}[OK] {name}{Style.RESET_ALL}")
     else:
-        print(f"{Fore.RED}✗ {name}{Style.RESET_ALL}")
+        print(f"{Fore.RED}[FAIL] {name}{Style.RESET_ALL}")
         if message:
-            print(f"  {Fore.YELLOW}→ {message}{Style.RESET_ALL}")
+            print(f"  {Fore.YELLOW}-> {message}{Style.RESET_ALL}")
 
 def test_python_version():
     """Test Python version."""
@@ -182,17 +182,17 @@ def main():
     passed_count = sum(results)
     total_count = len(results)
     
-    print(f"\n{Fore.CYAN}{'─'*60}{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN}{'-'*60}{Style.RESET_ALL}")
     print(f"\n{Fore.CYAN}Results: {passed_count}/{total_count} tests passed{Style.RESET_ALL}\n")
     
     if passed_count == total_count:
-        print(f"{Fore.GREEN}{'✓ ALL TESTS PASSED!'}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'[OK] ALL TESTS PASSED!'}{Style.RESET_ALL}")
         print(f"\n{Fore.GREEN}Your setup is complete and ready to use!{Style.RESET_ALL}")
         print(f"\n{Fore.CYAN}Next step:{Style.RESET_ALL}")
         print(f"  Run: {Fore.YELLOW}python main.py{Style.RESET_ALL}\n")
         return 0
     else:
-        print(f"{Fore.YELLOW}⚠ SOME TESTS FAILED{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[WARNING] SOME TESTS FAILED{Style.RESET_ALL}")
         print(f"\n{Fore.YELLOW}Please fix the issues above before running the workflow.{Style.RESET_ALL}")
         print(f"\n{Fore.CYAN}Quick fixes:{Style.RESET_ALL}")
         print(f"  Dependencies: {Fore.YELLOW}pip install -r requirements.txt{Style.RESET_ALL}")
