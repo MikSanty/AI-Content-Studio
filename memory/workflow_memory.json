@@ -1,0 +1,38 @@
+{
+  "last_updated": "2025-10-15T10:56:26.910851",
+  "user_preferences": {},
+  "feedback_history": [
+    {
+      "stage": "writer",
+      "feedback": "If you're going to write citations like \"according to Miquido UI/UX Trends\" then make sure to include the actual link as a hyperlink to the word \"Miquido UI/UX Trends\"",
+      "approved": false,
+      "timestamp": "2025-10-15T10:36:22.121648",
+      "content_snippet": "# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth. Yet, with a myriad"
+    },
+    {
+      "stage": "writer",
+      "feedback": "the references.md file already has all the sources and references you need for citations so why are you hallucinating and putting links that do not exist?",
+      "approved": false,
+      "timestamp": "2025-10-15T10:52:08.504571",
+      "content_snippet": "# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth. Yet, with a myriad"
+    },
+    {
+      "stage": "writer",
+      "feedback": "If you're going to write citations like \\\"according to Miquido UI/UX Trends\\\" then make sure to include the actual link as a hyperlink to the word \\\"Miquido UI/UX Trends\\\"\",",
+      "approved": false,
+      "timestamp": "2025-10-15T10:56:26.910826",
+      "content_snippet": "# REVISED ARTICLE\n\n# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth."
+    }
+  ],
+  "rejection_patterns": {
+    "writer": [
+      "If you're going to write citations like \"according to Miquido UI/UX Trends\" then make sure to include the actual link as a hyperlink to the word \"Miquido UI/UX Trends\"",
+      "the references.md file already has all the sources and references you need for citations so why are you hallucinating and putting links that do not exist?",
+      "If you're going to write citations like \\\"according to Miquido UI/UX Trends\\\" then make sure to include the actual link as a hyperlink to the word \\\"Miquido UI/UX Trends\\\"\","
+    ]
+  },
+  "session_stats": {
+    "writer_feedback_count": 3,
+    "writer_rejections": 3
+  }
+}
