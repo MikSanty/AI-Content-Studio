@@ -52,6 +52,27 @@ class APIClient:
     def _generate_gemini(self, prompt, temperature):
         """Generate content using Google Gemini API."""
         model = self.genai.GenerativeModel(self.model)
+        
+        # Configure safety settings to be less restrictive
+        safety_settings = [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_ONLY_HIGH"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_ONLY_HIGH"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_ONLY_HIGH"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_ONLY_HIGH"
+            }
+        ]
+        
         generation_config = self.genai.types.GenerationConfig(
             temperature=temperature,
             max_output_tokens=8192
@@ -59,8 +80,25 @@ class APIClient:
         
         response = model.generate_content(
             prompt,
-            generation_config=generation_config
+            generation_config=generation_config,
+            safety_settings=safety_settings
         )
+        
+        # Check if response was blocked by safety filters
+        if not response.candidates or not response.candidates[0].content.parts:
+            # Get the finish reason
+            finish_reason = response.candidates[0].finish_reason if response.candidates else "UNKNOWN"
+            
+            # Provide helpful error message
+            if finish_reason == 2:  # SAFETY
+                raise Exception(
+                    "Content was blocked by Gemini's safety filters. "
+                    "This usually happens with certain topics or phrasing. "
+                    "Try: 1) Revising your input content, 2) Adjusting safety_settings, "
+                    "or 3) Using OpenAI instead (set AI_PROVIDER=openai in .env)"
+                )
+            else:
+                raise Exception(f"No content returned. Finish reason: {finish_reason}")
         
         return response.text
 
