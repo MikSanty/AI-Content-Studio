@@ -174,6 +174,24 @@ class WorkflowMemory:
                     context_parts.append(f"{i}. {rejection}")
                 context_parts.append("")
         
+        # Add citation-specific reminders for writer agent
+        if agent_name == 'writer':
+            citation_issues = self._detect_citation_issues()
+            if citation_issues:
+                context_parts.append("# ⚠️ CRITICAL: Citation & Hyperlink Requirements")
+                context_parts.append("")
+                context_parts.append("**USER HAS REPEATEDLY FLAGGED CITATION ISSUES:**")
+                context_parts.append("")
+                for issue in citation_issues:
+                    context_parts.append(f"- {issue}")
+                context_parts.append("")
+                context_parts.append("**MANDATORY ACTIONS:**")
+                context_parts.append("1. Convert ALL source citations to hyperlinked markdown format: [Source Name](exact_url)")
+                context_parts.append("2. Use ONLY exact URLs from the REFERENCE MATERIALS section")
+                context_parts.append("3. NEVER write 'according to Source' without a hyperlink")
+                context_parts.append("4. NEVER invent or modify URLs")
+                context_parts.append("")
+        
         # Add extracted preferences
         if self.user_preferences:
             context_parts.append("# User Preferences")
@@ -190,6 +208,50 @@ class WorkflowMemory:
             context_parts.append("")
         
         return '\n'.join(context_parts) if context_parts else ""
+    
+    def _detect_citation_issues(self):
+        """
+        Detect if user has complained about citation/hyperlink issues.
+        
+        Returns:
+            List of citation-related issues found in feedback
+        """
+        citation_keywords = [
+            'hyperlink', 'link', 'citation', 'url', 'source', 'reference',
+            'according to', 'hallucinating', 'hallucinate', 'clickable'
+        ]
+        
+        issues = []
+        feedback_texts = []
+        
+        # Collect all feedback text
+        for entry in self.feedback_history:
+            if not entry.get('approved') and entry.get('feedback'):
+                feedback_texts.append(entry['feedback'].lower())
+        
+        # Check for citation-related keywords
+        citation_complaints = 0
+        for text in feedback_texts:
+            if any(keyword in text for keyword in citation_keywords):
+                citation_complaints += 1
+        
+        # If multiple citation complaints, extract key issues
+        if citation_complaints >= 2:
+            issues.append(f"User has flagged citation issues {citation_complaints} times")
+            
+            # Check for specific patterns
+            for text in feedback_texts[-5:]:  # Check last 5 feedbacks
+                if 'hyperlink' in text or 'link' in text:
+                    if 'missing' in text or 'without' in text or 'no' in text:
+                        issues.append("Missing hyperlinks on source citations")
+                
+                if 'hallucinating' in text or 'hallucinate' in text:
+                    issues.append("Inventing/hallucinating URLs not in references")
+                
+                if 'according to' in text and ('link' in text or 'hyperlink' in text):
+                    issues.append("'According to' statements need hyperlinks")
+        
+        return list(set(issues))  # Remove duplicates
     
     def get_session_summary(self):
         """

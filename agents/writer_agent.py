@@ -89,6 +89,18 @@ Revise the article to address the feedback while maintaining:
 2. Professional quality writing
 3. Coherence and clarity
 
+# CRITICAL CITATION REQUIREMENTS
+**EVERY source citation MUST be a properly hyperlinked markdown link:**
+- Use format: [Source Name](exact_url)
+- NEVER write "according to Source Name" without a hyperlink
+- NEVER invent or modify URLs - use only exact URLs from your reference materials
+- Verify every citation has a clickable link before finalizing
+
+**Examples:**
+- ✅ "according to [Miquido UI/UX Trends](https://www.miquido.com/blog/ui-ux-design-trends/)"
+- ❌ "according to Miquido UI/UX Trends" (missing hyperlink)
+- ❌ "according to [Miquido](https://miquido.com/trends)" (invented/wrong URL)
+
 Generate the COMPLETE revised article now:"""
 
         revised_article = self.client.generate_content(revision_prompt, self.temperature)
@@ -153,6 +165,13 @@ Format the outline with:
 - [REFERENCE: ...] tags to indicate which reference material to use
 - [DATA: ...] tags to note specific statistics or facts to include
 - [EXAMPLE: ...] tags for examples or case studies to incorporate
+- [LINK: exact_url] tags next to each source citation to ensure proper hyperlinking later
+
+# CRITICAL CITATION PLANNING
+For every data point, quote, or reference you plan to cite:
+- Include the [LINK: exact_url] tag with the precise URL from REFERENCE MATERIALS
+- This ensures the final article will have properly hyperlinked citations
+- Example: "[DATA: 50% users abandon slow pages] [LINK: https://www.miquido.com/blog/ui-ux-design-trends/]"
 
 Generate the detailed outline now:"""
 
@@ -240,6 +259,25 @@ Write a complete, engaging article that:
 6. Achieves the tone and style specified in the instructions
 
 The outline is your roadmap - follow it closely while bringing it to life with compelling writing.
+
+# CRITICAL CITATION REQUIREMENTS
+**EVERY source citation MUST be a properly hyperlinked markdown link:**
+- Convert ALL source mentions to format: [Source Name](exact_url)
+- Use ONLY the exact URLs from the REFERENCE MATERIALS section below
+- NEVER invent, modify, guess, or hallucinate URLs
+- If the outline includes [LINK: url] tags, use those exact URLs
+- Before finishing, verify every "according to" or data citation has a clickable hyperlink
+
+**Mandatory Format:**
+- ✅ "according to [Miquido UI/UX Trends](https://www.miquido.com/blog/ui-ux-design-trends/)"
+- ✅ "as [Userpilot SaaS Research](https://userpilot.com/blog/saas-landing-pages/) reports"
+- ❌ "according to Miquido UI/UX Trends" (NO HYPERLINK - UNACCEPTABLE)
+- ❌ "according to [Source](https://fake-url.com)" (INVENTED URL - UNACCEPTABLE)
+
+**Final Check Before Submitting:**
+- Scan your article for any source mentions without hyperlinks
+- Verify all URLs exactly match the REFERENCE MATERIALS section
+- No plain text source citations are acceptable
 
 Generate the COMPLETE article now:"""
 

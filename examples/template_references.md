@@ -1,12 +1,43 @@
 # Reference Materials Template
 
+## ⚠️ CRITICAL: Citation Format Guidelines
+
+**EVERY source citation in your article MUST be a clickable hyperlink!**
+
+### Correct Citation Format Examples:
+```markdown
+✅ "according to [Miquido UI/UX Trends](https://www.miquido.com/blog/ui-ux-design-trends/)"
+✅ "as [Userpilot SaaS Research](https://userpilot.com/blog/saas-landing-pages/) reports"
+✅ "[TechRadar's review](https://www.techradar.com/reviews/product-name) shows that..."
+✅ "Data from [Nielsen Norman Group](https://www.nngroup.com/articles/article-name/) indicates..."
+```
+
+### Incorrect Citation Format Examples:
+```markdown
+❌ "according to Miquido UI/UX Trends" (NO HYPERLINK)
+❌ "as various studies show" (TOO VAGUE, NO SOURCE)
+❌ "according to [Miquido](https://miquido.com/trends)" (WRONG/INVENTED URL)
+❌ "[Source: Company Research]" (NOT A CLICKABLE LINK)
+```
+
+### Quick Reference URL Mapping
+When you add sources below, create a mapping table for easy reference:
+
+| Source Name | Exact URL to Use |
+|-------------|------------------|
+| Example Source 1 | https://www.example.com/article1 |
+| Example Source 2 | https://www.example.com/article2 |
+| Example Source 3 | https://www.example.com/article3 |
+
+---
+
 ## Key Statistics / Data Points
 [Add relevant statistics, research findings, and data that support your article topic]
 
-- [Statistic 1 with source]
-- [Statistic 2 with source]
-- [Statistic 3 with source]
-- [Trend data or predictions]
+- [Statistic 1 with source] - Source URL: [url]
+- [Statistic 2 with source] - Source URL: [url]
+- [Statistic 3 with source] - Source URL: [url]
+- [Trend data or predictions] - Source URL: [url]
 
 ## Industry Insights
 
@@ -35,13 +66,23 @@
 - [Guideline 2]
 - [Guideline 3]
 
-## Source Materials
+## Source Materials with URLs
 
-[List your primary research sources and references]
-1. [Source 1]
-2. [Source 2]
-3. [Source 3]
-4. [Source 4]
+[List your primary research sources with EXACT URLs for citations]
+
+1. **[Source Name 1]** - https://www.exact-url-1.com/path
+   - Brief description of what this source covers
+   
+2. **[Source Name 2]** - https://www.exact-url-2.com/path
+   - Brief description of what this source covers
+   
+3. **[Source Name 3]** - https://www.exact-url-3.com/path
+   - Brief description of what this source covers
+   
+4. **[Source Name 4]** - https://www.exact-url-4.com/path
+   - Brief description of what this source covers
+
+**IMPORTANT:** These URLs must be used EXACTLY as shown when citing in your article.
 
 ## Examples to Reference
 

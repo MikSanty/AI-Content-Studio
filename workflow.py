@@ -8,6 +8,7 @@ from utils import (
     print_success, print_error, print_info, get_user_choice, get_user_input,
     display_content
 )
+from citation_validator import validate_citations
 
 # Import enhancement modules if enabled
 if Config.ENABLE_QUALITY_SCORING:
@@ -145,6 +146,16 @@ class AIContentStudioWorkflow:
         draft_path = os.path.join(self.session_dir, "01_writer_draft.md")
         write_file(draft_path, draft)
         
+        # Validate citations
+        print_section("CITATION VALIDATION")
+        citation_passed, citation_report = validate_citations(draft, references_path)
+        print(citation_report)
+        
+        if not citation_passed:
+            print_error("⚠️  WARNING: Citation issues detected!")
+            print_info("The draft has missing hyperlinks or hallucinated URLs.")
+            print_info("Consider requesting revisions to fix citation issues.")
+        
         # Show quality scores
         if self.quality_analyzer:
             scores = self.quality_analyzer.analyze(draft, self.template_content, self.references_content)
@@ -192,6 +203,14 @@ class AIContentStudioWorkflow:
                         f"01_writer_draft_rev{revision_count}.md"
                     )
                     write_file(revision_path, draft)
+                    
+                    # Validate citations after revision
+                    print_section("CITATION VALIDATION")
+                    citation_passed, citation_report = validate_citations(draft, references_path)
+                    print(citation_report)
+                    
+                    if not citation_passed:
+                        print_error("⚠️  WARNING: Citation issues still present!")
                     
                     # Show updated quality scores
                     if self.quality_analyzer:
