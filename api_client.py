@@ -38,15 +38,26 @@ class APIClient:
     
     def _generate_openai(self, prompt, temperature):
         """Generate content using OpenAI API."""
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "You are a professional content writer and editor. Follow the instructions precisely and generate high-quality content."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=temperature,
-            max_tokens=8192
-        )
+        # Handle models that only support default temperature (like gpt-5-mini)
+        if self.model == 'gpt-5-mini':
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a professional content writer and editor. Follow the instructions precisely and generate high-quality content."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_completion_tokens=8192
+            )
+        else:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a professional content writer and editor. Follow the instructions precisely and generate high-quality content."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=temperature,
+                max_completion_tokens=8192
+            )
         return response.choices[0].message.content
     
     def _generate_gemini(self, prompt, temperature):
