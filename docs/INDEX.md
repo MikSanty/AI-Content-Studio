@@ -6,9 +6,10 @@ Quick navigation guide to all project files.
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| **`QUICK_START.md`** | 5-minute setup guide | First time setup |
-| **`README.md`** | Complete documentation | Full reference |
-| **`SETUP.md`** | Detailed setup instructions | Step-by-step help |
+| **`README.md`** (root) | Complete documentation | Full reference |
+| **`docs/guides/QUICK_START.md`** | 5-minute setup guide | First time setup |
+| **`docs/FEATURES.md`** | Complete features guide | Feature overview & config |
+| **`docs/setup/SETUP.md`** | Detailed setup instructions | Step-by-step help |
 
 ## ⚙️ Setup & Configuration
 
@@ -36,6 +37,8 @@ Quick navigation guide to all project files.
 
 Location: `templates/` directory
 
+### General Article Mode
+
 | File | Purpose | Required? |
 |------|---------|-----------|
 | **`manual.md`** | Your content brief | ✅ Yes |
@@ -43,16 +46,33 @@ Location: `templates/` directory
 | `references.md` | Research & data | Recommended |
 | `writer_prompt.md` | Writer instructions | Optional* |
 
+### Tool Review Mode
+
+| File | Purpose | Required? |
+|------|---------|-----------|
+| **`tool_review_brief.md`** | Tool review input | ✅ Yes (for reviews) |
+| `tool_review_structure.md` | Review section structure | Optional* |
+| `tool_review_writer_prompt.md` | Review writer instructions | Optional* |
+
 *Default versions work well, but customize if needed
 
 ## 📏 Rules (Agent Behavior)
 
 Location: `rules/` directory
 
+### General Article Mode
+
 | File | Controls | When to Edit |
 |------|----------|--------------|
 | `llmon_rules.md` | Style variations | Customize variation styles |
 | `editor_rules.md` | Polish standards | Adjust editing criteria |
+
+### Tool Review Mode
+
+| File | Controls | When to Edit |
+|------|----------|--------------|
+| `llmon_tool_review_rules.md` | Review style variations | Customize review variations |
+| `editor_tool_review_rules.md` | Review polish standards | Adjust review editing |
 
 ## 🤖 Core Application
 
@@ -63,8 +83,19 @@ Location: Root directory
 | `main.py` | Application entry point |
 | `workflow.py` | Orchestrates 3-agent pipeline |
 | `config.py` | Settings & configuration |
-| `api_client.py` | Gemini API integration |
+| `api_client.py` | Multi-provider API integration (OpenAI/Gemini) |
 | `utils.py` | Helper functions |
+
+## 🧠 Intelligence Modules
+
+Location: Root directory
+
+| File | Purpose |
+|------|---------|
+| `quality_analyzer.py` | Multi-dimensional content quality scoring |
+| `workflow_memory.py` | Cross-stage learning and preference extraction |
+| `variation_differentiator.py` | Ensures LLMON variations are distinct |
+| `citation_validator.py` | Citation & hyperlink validation |
 
 ## 🧠 Agent Modules
 
@@ -81,25 +112,70 @@ Location: `agents/` directory
 
 Location: `examples/` directory
 
+### General Article Examples
+
 | File | Purpose |
 |------|---------|
 | `example_manual.md` | Sample content brief |
 | `example_references.md` | Sample references |
+| `template_manual.md` | Blank template for briefs |
+| `template_references.md` | Blank template for references |
+
+### Tool Review Examples
+
+| File | Purpose |
+|------|---------|
+| `example_tool_review_brief.md` | Complete tool review example |
+| `example_tool_review_output.md` | Sample generated review |
+| `template_tool_review_brief.md` | Blank template for tool reviews |
 
 **Use these as templates for your own content!**
 
 ## 📚 Documentation
 
+Location: `docs/` directory
+
+### Getting Started
+
 | File | Audience | Content |
 |------|----------|---------|
-| `README.md` | Everyone | Complete guide |
-| `QUICK_START.md` | New users | Fast setup |
-| `SETUP.md` | First-time users | Detailed instructions |
-| `WORKFLOW_DIAGRAM.md` | Visual learners | Flow diagrams |
-| `PROJECT_SUMMARY.md` | Overview | Implementation details |
-| `CHANGELOG.md` | Developers | Version history & changes |
-| `INDEX.md` | This file | File navigation |
-| `brainstorm-session-result.md` | Context | Original design |
+| `README.md` (root) | Everyone | Complete project guide |
+| `docs/guides/QUICK_START.md` | New users | 5-minute setup |
+| `docs/setup/SETUP.md` | First-time users | Detailed setup instructions |
+| `docs/setup/OPENAI_SETUP_INSTRUCTIONS.md` | OpenAI users | OpenAI-specific setup |
+
+### Feature Guides
+
+| File | Topic | Content |
+|------|-------|---------|
+| `docs/FEATURES.md` | All features | Complete feature reference |
+| `docs/guides/ENHANCEMENTS_GUIDE.md` | Enhancements | Feature deep-dive & usage |
+| `docs/guides/TOOL_REVIEW_MODE.md` | Tool reviews | Complete tool review guide |
+| `docs/guides/WORKFLOW_DIAGRAM.md` | Visual workflow | Flow diagrams & architecture |
+
+### Project Documentation
+
+| File | Audience | Content |
+|------|----------|---------|
+| `docs/project/PROJECT_SUMMARY.md` | Developers | System overview & architecture |
+| `docs/project/CHANGELOG.md` | All users | Version history & changes |
+| `docs/project/AGENT_ANALYSIS.md` | Developers | Technical agent analysis |
+
+### Navigation
+
+| File | Purpose |
+|------|---------|
+| `docs/INDEX.md` | This file - Complete file reference |
+
+## 🧪 Testing
+
+Location: Root directory
+
+| File | Purpose |
+|------|---------|
+| `test_setup.py` | Verify installation and API configuration |
+| `test_enhancements.py` | Unit tests for all enhancement modules |
+| `test_citation_validator.py` | Citation validation tests |
 
 ## 📂 Output Files
 
@@ -107,15 +183,15 @@ Location: `outputs/[timestamp]/` (auto-created)
 
 | File | Content | Stage |
 |------|---------|-------|
+| `01_writer_outline.md` | Article outline | After outline phase |
 | `01_writer_draft.md` | Initial draft | After Writer |
-| `01_writer_draft_rev1.md` | Revisions | If revised |
-| `02_llmon_variation1.md` | Style 1 | After LLMON |
-| `02_llmon_variation2.md` | Style 2 | After LLMON |
-| `02_llmon_variation3.md` | Style 3 | After LLMON |
-| `02_llmon_custom_rules.md` | Custom rules | If iterated |
-| `03_editor_polished.md` | Polished | After Editor |
-| `03_editor_polished_rev1.md` | Revisions | If revised |
+| `02_llmon_variation1_iter0.md` | Style variation 1 | After LLMON |
+| `02_llmon_variation2_iter0.md` | Style variation 2 | After LLMON |
+| `02_llmon_variation3_iter0.md` | Style variation 3 | After LLMON |
+| `03_editor_polished.md` | Polished article | After Editor |
 | **`FINAL_ARTICLE.md`** | **Final output** | **Complete!** |
+
+*Note: Files may have quality scores and iteration numbers appended*
 
 ## 🎯 Quick Reference
 

@@ -38,17 +38,16 @@ class APIClient:
     
     def _generate_openai(self, prompt, temperature):
         """Generate content using OpenAI API."""
-        # Handle models that only support default temperature (like gpt-5-mini)
-        if self.model == 'gpt-5-mini':
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": "You are a professional content writer and editor. Follow the instructions precisely and generate high-quality content."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_completion_tokens=8192
-            )
-        else:
+        # Models that don't support temperature parameter
+        # These models only support default temperature (1.0)
+        models_without_temperature = ['gpt-5', 'o1-preview', 'o1-mini', 'o1', 'o3-mini', 'o3']
+        
+        # Check if current model doesn't support temperature
+        supports_temperature = not any(
+            self.model.startswith(model) for model in models_without_temperature
+        )
+        
+        if supports_temperature:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -56,7 +55,17 @@ class APIClient:
                     {"role": "user", "content": prompt}
                 ],
                 temperature=temperature,
-                max_completion_tokens=8192
+                max_completion_tokens=16384
+            )
+        else:
+            # Models that don't support temperature - use only required parameters
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a professional content writer and editor. Follow the instructions precisely and generate high-quality content."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_completion_tokens=16384
             )
         return response.choices[0].message.content
     
@@ -64,29 +73,29 @@ class APIClient:
         """Generate content using Google Gemini API."""
         model = self.genai.GenerativeModel(self.model)
         
-        # Configure safety settings to be less restrictive
+        # Configure safety settings to most permissive (BLOCK_NONE)
         safety_settings = [
             {
                 "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_ONLY_HIGH"
+                "threshold": "BLOCK_NONE"
             },
             {
                 "category": "HARM_CATEGORY_HATE_SPEECH",
-                "threshold": "BLOCK_ONLY_HIGH"
+                "threshold": "BLOCK_NONE"
             },
             {
                 "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_ONLY_HIGH"
+                "threshold": "BLOCK_NONE"
             },
             {
                 "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_ONLY_HIGH"
+                "threshold": "BLOCK_NONE"
             }
         ]
         
         generation_config = self.genai.types.GenerationConfig(
             temperature=temperature,
-            max_output_tokens=8192
+            max_output_tokens=16384
         )
         
         response = model.generate_content(

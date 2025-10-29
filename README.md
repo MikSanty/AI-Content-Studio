@@ -19,9 +19,11 @@ A sophisticated content creation system that uses **three specialized AI agents*
 - 🧠 **Learns from your feedback** - Memory system adapts to your preferences
 - 📊 **Objective quality metrics** - Multi-dimensional scoring (readability, SEO, engagement)
 - ⚡ **3x faster** - Parallel variation generation
-- 🎯 **Intelligent validation** - Ensures variations are truly different
+- 🎯 **Intelligent validation** - Ensures variations are truly different and citations are properly linked
 - 🔄 **Iterative refinement** - Approve, revise, or reject at each stage
 - 🎨 **Flexible providers** - OpenAI (GPT-4o/GPT-4.1) or Google Gemini
+- 📝 **Dual content modes** - General articles OR specialized tool reviews
+- 🔗 **Citation validation** - Automatic detection of missing hyperlinks and URL verification
 
 ---
 
@@ -219,17 +221,23 @@ AI-Content-Studio/
 ├── 🧠 INTELLIGENCE MODULES
 │   ├── quality_analyzer.py          # Multi-dimensional scoring
 │   ├── workflow_memory.py           # Cross-stage learning
-│   └── variation_differentiator.py  # Variation validation
+│   ├── variation_differentiator.py  # Variation validation
+│   └── citation_validator.py        # Citation & hyperlink validation
 │
 ├── 📝 USER INPUTS (YOU EDIT THESE)
 │   ├── templates/
 │   │   ├── manual.md                # ⚠️ Your content brief (REQUIRED)
 │   │   ├── template.md              # Article structure
 │   │   ├── references.md            # Research & data
-│   │   └── writer_prompt.md         # Writing instructions
+│   │   ├── writer_prompt.md         # Writing instructions
+│   │   ├── tool_review_brief.md     # Tool review input template
+│   │   ├── tool_review_structure.md # Review section structure
+│   │   └── tool_review_writer_prompt.md # Review writer instructions
 │   └── rules/
-│       ├── llmon_rules.md           # Variation styles
-│       └── editor_rules.md          # Polish guidelines
+│       ├── llmon_rules.md           # Variation styles (general)
+│       ├── editor_rules.md          # Polish guidelines (general)
+│       ├── llmon_tool_review_rules.md    # Tool review variations
+│       └── editor_tool_review_rules.md   # Tool review polish
 │
 ├── 📚 DOCUMENTATION
 │   └── docs/
@@ -237,7 +245,8 @@ AI-Content-Studio/
 │       ├── guides/
 │       │   ├── QUICK_START.md       # 5-minute setup guide
 │       │   ├── WORKFLOW_DIAGRAM.md  # Visual workflow
-│       │   └── ENHANCEMENTS_GUIDE.md # Feature deep-dive
+│       │   ├── ENHANCEMENTS_GUIDE.md # Feature deep-dive
+│       │   └── TOOL_REVIEW_MODE.md  # Tool review mode guide
 │       ├── setup/
 │       │   ├── SETUP.md             # Detailed instructions
 │       │   └── OPENAI_SETUP_INSTRUCTIONS.md
@@ -250,7 +259,11 @@ AI-Content-Studio/
 │   └── examples/
 │       ├── example_manual.md        # Sample content brief
 │       ├── example_references.md    # Sample references
-│       └── template_*.md            # Templates
+│       ├── example_tool_review_brief.md   # Sample tool review
+│       ├── example_tool_review_output.md  # Sample review output
+│       ├── template_manual.md       # Template for general articles
+│       ├── template_references.md   # Template for references
+│       └── template_tool_review_brief.md  # Template for reviews
 │
 ├── 📊 OUTPUTS (AUTO-GENERATED)
 │   └── outputs/
@@ -265,7 +278,8 @@ AI-Content-Studio/
 │
 ├── 🧪 TESTING
 │   ├── test_setup.py                # Setup verification
-│   └── test_enhancements.py         # Feature tests (23 tests)
+│   ├── test_enhancements.py         # Feature tests (23 tests)
+│   └── test_citation_validator.py   # Citation validation tests
 │
 ├── 💾 MEMORY (AUTO-CREATED)
 │   └── memory/                      # Persistent learning data
@@ -455,6 +469,62 @@ EDITOR_TEMPERATURE = 0.5   # Lower for consistency
 
 ---
 
+## 🔧 Tool Review Mode
+
+**NEW:** Generate professional, story-driven software/tool reviews optimized for both humans and LLMs.
+
+### What's Different?
+
+Tool Review Mode creates **personable, evidence-backed reviews** with a specialized workflow:
+
+| Feature | General Article | Tool Review |
+|---------|-----------------|-------------|
+| **Voice** | Professional, flexible | First-person, story-driven |
+| **Evidence** | Optional citations | Required 6-10 user quotes |
+| **Structure** | Flexible template | Fixed review sections |
+| **Format** | Standard | Strict (no em dashes, clean headers) |
+| **Pricing** | Not required | Detailed breakdown required |
+
+### Quick Start
+
+**1. Set Mode:**
+```env
+CONTENT_MODE=tool_review
+```
+
+**2. Fill Out Brief:**
+Use `templates/tool_review_brief.md`:
+- Answer 4 pre-writing questions (title, audience, motivation, benefit)
+- Collect 6-10 quotes from G2, Capterra, Reddit, etc.
+- Document pricing, migration paths, implementation steps
+- Gather review hub ratings (G2, Capterra)
+
+**3. Run Workflow:**
+```bash
+python main.py
+```
+
+### Output Includes
+
+✅ Story-driven narrative with first-person voice  
+✅ 6-10 integrated user quotes (from G2, Reddit, Capterra, etc.)  
+✅ Conditional framing: "If you're X... if you're Y..."  
+✅ Detailed pricing breakdown with scaling info  
+✅ Honest pros, cons, and fit analysis  
+✅ Migration paths (switching to/from tool)  
+✅ Implementation steps (realistic setup)  
+✅ Sources appendix with all quote URLs  
+
+### Example
+
+See `examples/example_tool_review_output.md` for a complete Surfer SEO review demonstrating all required elements.
+
+### Learn More
+
+📚 **[Complete Tool Review Mode Guide](docs/guides/TOOL_REVIEW_MODE.md)** - Detailed walkthrough, best practices, troubleshooting
+
+---
+
 ## 🔧 Advanced Customization
 
 ### Modify Agent Behavior
@@ -538,6 +608,7 @@ This README provides a comprehensive overview. For deeper details:
 - 🔧 **[Setup Instructions](docs/setup/SETUP.md)** - Detailed configuration
 - 📊 **[Workflow Diagrams](docs/guides/WORKFLOW_DIAGRAM.md)** - Visual guides
 - ✨ **[Enhancements Guide](docs/guides/ENHANCEMENTS_GUIDE.md)** - Feature deep-dive
+- 📝 **[Tool Review Mode Guide](docs/guides/TOOL_REVIEW_MODE.md)** - Complete tool review workflow **NEW**
 - 📝 **[Changelog](docs/project/CHANGELOG.md)** - Version history (v1.0 → v3.0)
 - 🏗️ **[Project Summary](docs/project/PROJECT_SUMMARY.md)** - Technical overview
 - 🤖 **[Agent Analysis](docs/project/AGENT_ANALYSIS.md)** - Agent architecture

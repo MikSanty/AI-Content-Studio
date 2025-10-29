@@ -39,11 +39,18 @@ class AIContentStudioWorkflow:
         self.session_dir = os.path.join(Config.OUTPUTS_DIR, self.session_id)
         ensure_dir(self.session_dir)
         
+        # Detect content mode
+        self.content_mode = Config.CONTENT_MODE
+        
         # Track template and reference paths for quality scoring
         self.template_content = None
         self.references_content = None
         
         print_info(f"Session ID: {self.session_id}")
+        
+        # Display content mode
+        mode_display = "Tool Review" if self.content_mode == 'tool_review' else "General Article"
+        print_info(f"Content Mode: {mode_display}")
         
         # Display enabled enhancements
         enhancements = []
@@ -100,11 +107,17 @@ class AIContentStudioWorkflow:
         """Execute Writer agent stage with optional outline and revision loop."""
         print_header("STAGE 1: WRITER AGENT")
         
-        # Define input files
-        manual_path = os.path.join(Config.TEMPLATES_DIR, "manual.md")
-        template_path = os.path.join(Config.TEMPLATES_DIR, "template.md")
-        references_path = os.path.join(Config.TEMPLATES_DIR, "references.md")
-        prompt_path = os.path.join(Config.TEMPLATES_DIR, "writer_prompt.md")
+        # Define input files based on content mode
+        if self.content_mode == 'tool_review':
+            manual_path = os.path.join(Config.TEMPLATES_DIR, "tool_review_brief.md")
+            template_path = os.path.join(Config.TEMPLATES_DIR, "tool_review_structure.md")
+            references_path = os.path.join(Config.TEMPLATES_DIR, "references.md")  # Not used for tool reviews
+            prompt_path = os.path.join(Config.TEMPLATES_DIR, "tool_review_writer_prompt.md")
+        else:
+            manual_path = os.path.join(Config.TEMPLATES_DIR, "manual.md")
+            template_path = os.path.join(Config.TEMPLATES_DIR, "template.md")
+            references_path = os.path.join(Config.TEMPLATES_DIR, "references.md")
+            prompt_path = os.path.join(Config.TEMPLATES_DIR, "writer_prompt.md")
         
         # Load template and references for quality scoring
         if Config.ENABLE_QUALITY_SCORING:
@@ -131,13 +144,25 @@ class AIContentStudioWorkflow:
         
         try:
             if Config.ENABLE_OUTLINE_PHASE and approved_outline:
-                draft = self.writer.write_from_outline(
-                    approved_outline, manual_path, template_path, references_path, prompt_path
-                )
+                # Use appropriate method based on content mode
+                if self.content_mode == 'tool_review':
+                    draft = self.writer.write_from_outline_tool_review(
+                        approved_outline, manual_path, template_path, references_path, prompt_path
+                    )
+                else:
+                    draft = self.writer.write_from_outline(
+                        approved_outline, manual_path, template_path, references_path, prompt_path
+                    )
             else:
-                draft = self.writer.generate_draft(
-                    manual_path, template_path, references_path, prompt_path
-                )
+                # Use appropriate method based on content mode
+                if self.content_mode == 'tool_review':
+                    draft = self.writer.generate_draft_tool_review(
+                        manual_path, template_path, references_path, prompt_path
+                    )
+                else:
+                    draft = self.writer.generate_draft(
+                        manual_path, template_path, references_path, prompt_path
+                    )
         except Exception as e:
             print_error(f"Failed to generate draft: {str(e)}")
             return None
@@ -232,12 +257,23 @@ class AIContentStudioWorkflow:
     def _outline_approval_loop(self, manual_path, template_path, references_path, prompt_path, historical_context):
         """Handle outline generation and approval."""
         print_section("OUTLINE GENERATION PHASE")
-        print_info("Generating article outline...")
+        
+        # Use appropriate message based on mode
+        if self.content_mode == 'tool_review':
+            print_info("Generating tool review outline...")
+        else:
+            print_info("Generating article outline...")
         
         try:
-            outline = self.writer.generate_outline(
-                manual_path, template_path, references_path, prompt_path, historical_context
-            )
+            # Use appropriate method based on content mode
+            if self.content_mode == 'tool_review':
+                outline = self.writer.generate_outline_tool_review(
+                    manual_path, template_path, references_path, prompt_path, historical_context
+                )
+            else:
+                outline = self.writer.generate_outline(
+                    manual_path, template_path, references_path, prompt_path, historical_context
+                )
         except Exception as e:
             print_error(f"Failed to generate outline: {str(e)}")
             return None
@@ -269,7 +305,11 @@ class AIContentStudioWorkflow:
                 
                 print_info("Revising outline...")
                 try:
-                    outline = self.writer.revise_outline(outline, feedback)
+                    # Use appropriate method based on content mode
+                    if self.content_mode == 'tool_review':
+                        outline = self.writer.revise_outline_tool_review(outline, feedback)
+                    else:
+                        outline = self.writer.revise_outline(outline, feedback)
                     revision_count += 1
                     
                     # Save revised outline
@@ -290,7 +330,12 @@ class AIContentStudioWorkflow:
         """Execute LLMON agent stage with iteration loop and enhanced features."""
         print_header("STAGE 2: LLMON AGENT")
         
-        rules_path = os.path.join(Config.RULES_DIR, "llmon_rules.md")
+        # Use appropriate rules based on content mode
+        if self.content_mode == 'tool_review':
+            rules_path = os.path.join(Config.RULES_DIR, "llmon_tool_review_rules.md")
+        else:
+            rules_path = os.path.join(Config.RULES_DIR, "llmon_rules.md")
+        
         iteration_count = 0
         
         while True:
@@ -300,13 +345,20 @@ class AIContentStudioWorkflow:
                 print_info("Using parallel generation for faster processing...")
             
             try:
-                # Choose parallel or sequential generation
-                if Config.ENABLE_PARALLEL_VARIATIONS:
-                    variations = self.llmon.generate_variations_parallel(
+                # Choose method based on content mode
+                if self.content_mode == 'tool_review':
+                    # Tool review variations preserve story elements and factual details
+                    variations = self.llmon.generate_variations_tool_review(
                         article, rules_path, self.differentiator
                     )
                 else:
-                    variations = self.llmon.generate_variations(article, rules_path)
+                    # Regular article variations
+                    if Config.ENABLE_PARALLEL_VARIATIONS:
+                        variations = self.llmon.generate_variations_parallel(
+                            article, rules_path, self.differentiator
+                        )
+                    else:
+                        variations = self.llmon.generate_variations(article, rules_path)
                 
             except Exception as e:
                 print_error(f"Failed to generate variations: {str(e)}")
@@ -398,26 +450,40 @@ class AIContentStudioWorkflow:
         """Execute Editor agent stage with multi-pass editing and revision option."""
         print_header("STAGE 3: EDITOR AGENT")
         
-        rules_path = os.path.join(Config.RULES_DIR, "editor_rules.md")
+        # Use appropriate rules based on content mode
+        if self.content_mode == 'tool_review':
+            rules_path = os.path.join(Config.RULES_DIR, "editor_tool_review_rules.md")
+            print_info("Polishing tool review with format validation...")
+        else:
+            rules_path = os.path.join(Config.RULES_DIR, "editor_rules.md")
         
-        # Choose single-pass or multi-pass editing
-        if Config.ENABLE_MULTIPASS_EDITING:
-            print_info("Polishing article with multi-pass editing...")
-            print_info("Pass 1: Grammar & Mechanics -> Pass 2: Style & Voice -> Pass 3: Flow & Transitions -> Pass 4: Final Consistency")
-            
+        # Choose method based on content mode
+        if self.content_mode == 'tool_review':
+            # Tool review polishing with special format validation
             try:
-                polished = self.editor.polish_article_multipass(article, rules_path)
+                polished = self.editor.polish_article_tool_review(article, rules_path)
             except Exception as e:
-                print_error(f"Failed to polish article: {str(e)}")
+                print_error(f"Failed to polish tool review: {str(e)}")
                 return None
         else:
-            print_info("Polishing article...")
-            
-            try:
-                polished = self.editor.polish_article(article, rules_path)
-            except Exception as e:
-                print_error(f"Failed to polish article: {str(e)}")
-                return None
+            # Regular article polishing
+            if Config.ENABLE_MULTIPASS_EDITING:
+                print_info("Polishing article with multi-pass editing...")
+                print_info("Pass 1: Grammar & Mechanics -> Pass 2: Style & Voice -> Pass 3: Flow & Transitions -> Pass 4: Final Consistency")
+                
+                try:
+                    polished = self.editor.polish_article_multipass(article, rules_path)
+                except Exception as e:
+                    print_error(f"Failed to polish article: {str(e)}")
+                    return None
+            else:
+                print_info("Polishing article...")
+                
+                try:
+                    polished = self.editor.polish_article(article, rules_path)
+                except Exception as e:
+                    print_error(f"Failed to polish article: {str(e)}")
+                    return None
         
         # Save polished version
         polished_path = os.path.join(self.session_dir, "03_editor_polished.md")

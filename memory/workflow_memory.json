@@ -1,38 +1,525 @@
 {
-  "last_updated": "2025-10-15T10:56:26.910851",
-  "user_preferences": {},
+  "last_updated": "2025-10-29T17:21:48.919216",
+  "user_preferences": {
+    "common_rejections": {}
+  },
   "feedback_history": [
     {
       "stage": "writer",
-      "feedback": "If you're going to write citations like \"according to Miquido UI/UX Trends\" then make sure to include the actual link as a hyperlink to the word \"Miquido UI/UX Trends\"",
-      "approved": false,
-      "timestamp": "2025-10-15T10:36:22.121648",
-      "content_snippet": "# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth. Yet, with a myriad"
+      "approved": true,
+      "timestamp": "2025-10-15T16:51:37.399204",
+      "quality_scores": {
+        "overall_score": 52.9,
+        "readability": {
+          "score": 22.5,
+          "grade_level": 13.5,
+          "complexity": "challenging",
+          "avg_word_length": 7.2,
+          "avg_sentence_length": 11.7,
+          "flesch_score": 22.5
+        },
+        "seo": {
+          "score": 75,
+          "word_count": 3155,
+          "headings_count": 1,
+          "h1_count": 1,
+          "h2_count": 0,
+          "h3_count": 0,
+          "keywords": [
+            "pricing",
+            "https",
+            "saas",
+            "pages",
+            "design"
+          ],
+          "has_intro": true,
+          "has_conclusion": true
+        },
+        "engagement": {
+          "score": 68,
+          "questions": 2,
+          "personal_pronouns": 22,
+          "examples": 8,
+          "action_verbs": 2,
+          "emotional_words": 4,
+          "lists": 155
+        },
+        "structure": {
+          "score": 30,
+          "template_match": 0,
+          "sections_complete": false,
+          "template_sections_count": 11,
+          "article_sections_count": 0,
+          "has_proper_h1": true
+        },
+        "factual": {
+          "score": 87,
+          "reference_citations": 3,
+          "keyword_overlap": 19,
+          "reference_keywords_found": [
+            "config",
+            "conversion",
+            "design",
+            "features",
+            "figma",
+            "framer",
+            "guide",
+            "https",
+            "landing",
+            "month"
+          ]
+        }
+      }
+    },
+    {
+      "stage": "llmon",
+      "approved": true,
+      "timestamp": "2025-10-15T16:57:12.445171",
+      "quality_scores": {
+        "overall_score": 60.1,
+        "readability": {
+          "score": 35.2,
+          "grade_level": 12.4,
+          "complexity": "challenging",
+          "avg_word_length": 6.4,
+          "avg_sentence_length": 13.5,
+          "flesch_score": 35.2
+        },
+        "seo": {
+          "score": 90,
+          "word_count": 1942,
+          "headings_count": 13,
+          "h1_count": 1,
+          "h2_count": 0,
+          "h3_count": 12,
+          "keywords": [
+            "your",
+            "pricing",
+            "design",
+            "with",
+            "pages"
+          ],
+          "has_intro": true,
+          "has_conclusion": true
+        },
+        "engagement": {
+          "score": 93,
+          "questions": 2,
+          "personal_pronouns": 57,
+          "examples": 10,
+          "action_verbs": 7,
+          "emotional_words": 7,
+          "lists": 24
+        },
+        "structure": {
+          "score": 30,
+          "template_match": 0,
+          "sections_complete": false,
+          "template_sections_count": 11,
+          "article_sections_count": 0,
+          "has_proper_h1": true
+        },
+        "factual": {
+          "score": 57,
+          "reference_citations": 0,
+          "keyword_overlap": 19,
+          "reference_keywords_found": [
+            "config",
+            "conversion",
+            "design",
+            "features",
+            "figma",
+            "framer",
+            "guide",
+            "https",
+            "landing",
+            "month"
+          ]
+        }
+      }
+    },
+    {
+      "stage": "editor",
+      "approved": true,
+      "timestamp": "2025-10-15T17:01:47.640205",
+      "quality_scores": {
+        "overall_score": 64.6,
+        "readability": {
+          "score": 35.1,
+          "grade_level": 12.1,
+          "complexity": "challenging",
+          "avg_word_length": 6.5,
+          "avg_sentence_length": 12.6,
+          "flesch_score": 35.1
+        },
+        "seo": {
+          "score": 85,
+          "word_count": 1933,
+          "headings_count": 25,
+          "h1_count": 2,
+          "h2_count": 11,
+          "h3_count": 12,
+          "keywords": [
+            "your",
+            "pricing",
+            "pages",
+            "design",
+            "with"
+          ],
+          "has_intro": true,
+          "has_conclusion": true
+        },
+        "engagement": {
+          "score": 95,
+          "questions": 3,
+          "personal_pronouns": 51,
+          "examples": 8,
+          "action_verbs": 13,
+          "emotional_words": 5,
+          "lists": 32
+        },
+        "structure": {
+          "score": 54,
+          "template_match": 73,
+          "sections_complete": false,
+          "template_sections_count": 11,
+          "article_sections_count": 11,
+          "has_proper_h1": false
+        },
+        "factual": {
+          "score": 57,
+          "reference_citations": 0,
+          "keyword_overlap": 19,
+          "reference_keywords_found": [
+            "config",
+            "conversion",
+            "design",
+            "features",
+            "figma",
+            "framer",
+            "guide",
+            "https",
+            "landing",
+            "month"
+          ]
+        }
+      }
     },
     {
       "stage": "writer",
-      "feedback": "the references.md file already has all the sources and references you need for citations so why are you hallucinating and putting links that do not exist?",
-      "approved": false,
-      "timestamp": "2025-10-15T10:52:08.504571",
-      "content_snippet": "# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth. Yet, with a myriad"
+      "approved": true,
+      "timestamp": "2025-10-29T17:04:39.201651",
+      "quality_scores": {
+        "overall_score": 43.0,
+        "readability": {
+          "score": 45.8,
+          "grade_level": 12.1,
+          "complexity": "challenging",
+          "avg_word_length": 5.4,
+          "avg_sentence_length": 19.4,
+          "flesch_score": 45.8
+        },
+        "seo": {
+          "score": 65,
+          "word_count": 1610,
+          "headings_count": 1,
+          "h1_count": 1,
+          "h2_count": 0,
+          "h3_count": 0,
+          "keywords": [
+            "relume",
+            "design",
+            "export",
+            "claritee",
+            "wireframes"
+          ],
+          "has_intro": false,
+          "has_conclusion": false
+        },
+        "engagement": {
+          "score": 54,
+          "questions": 2,
+          "personal_pronouns": 58,
+          "examples": 2,
+          "action_verbs": 2,
+          "emotional_words": 1,
+          "lists": 12
+        },
+        "structure": {
+          "score": 30,
+          "template_match": 0,
+          "sections_complete": false,
+          "template_sections_count": 18,
+          "article_sections_count": 0,
+          "has_proper_h1": true
+        },
+        "factual": {
+          "score": 15,
+          "reference_citations": 0,
+          "keyword_overlap": 5,
+          "reference_keywords_found": [
+            "brief",
+            "example",
+            "https",
+            "source",
+            "tools"
+          ]
+        }
+      }
     },
     {
       "stage": "writer",
-      "feedback": "If you're going to write citations like \\\"according to Miquido UI/UX Trends\\\" then make sure to include the actual link as a hyperlink to the word \\\"Miquido UI/UX Trends\\\"\",",
-      "approved": false,
-      "timestamp": "2025-10-15T10:56:26.910826",
-      "content_snippet": "# REVISED ARTICLE\n\n# The Ultimate Guide to SaaS Landing Page Design Tools (2024-2025)\n\nIn the fast-paced SaaS landscape, a high-converting landing page isn't just an asset; it's the bedrock of growth."
+      "approved": true,
+      "timestamp": "2025-10-29T17:10:30.427745",
+      "quality_scores": {
+        "overall_score": 34.7,
+        "readability": {
+          "score": 40.9,
+          "grade_level": 14.1,
+          "complexity": "challenging",
+          "avg_word_length": 5.4,
+          "avg_sentence_length": 24.1,
+          "flesch_score": 40.9
+        },
+        "seo": {
+          "score": 50,
+          "word_count": 1877,
+          "headings_count": 0,
+          "h1_count": 0,
+          "h2_count": 0,
+          "h3_count": 0,
+          "keywords": [
+            "relume",
+            "with",
+            "export",
+            "claritee",
+            "that"
+          ],
+          "has_intro": false,
+          "has_conclusion": false
+        },
+        "engagement": {
+          "score": 49,
+          "questions": 2,
+          "personal_pronouns": 57,
+          "examples": 2,
+          "action_verbs": 2,
+          "emotional_words": 0,
+          "lists": 9
+        },
+        "structure": {
+          "score": 10,
+          "template_match": 0,
+          "sections_complete": false,
+          "template_sections_count": 18,
+          "article_sections_count": 0,
+          "has_proper_h1": false
+        },
+        "factual": {
+          "score": 18,
+          "reference_citations": 0,
+          "keyword_overlap": 6,
+          "reference_keywords_found": [
+            "brief",
+            "covers",
+            "details",
+            "https",
+            "source",
+            "tools"
+          ]
+        }
+      }
+    },
+    {
+      "stage": "writer",
+      "approved": true,
+      "timestamp": "2025-10-29T17:15:19.916392",
+      "quality_scores": {
+        "overall_score": 34.8,
+        "readability": {
+          "score": 38.0,
+          "grade_level": 14.3,
+          "complexity": "challenging",
+          "avg_word_length": 5.6,
+          "avg_sentence_length": 23.5,
+          "flesch_score": 38.0
+        },
+        "seo": {
+          "score": 60,
+          "word_count": 1665,
+          "headings_count": 0,
+          "h1_count": 0,
+          "h2_count": 0,
+          "h3_count": 0,
+          "keywords": [
+            "relume",
+            "with",
+            "claritee",
+            "wireframe",
+            "export"
+          ],
+          "has_intro": true,
+          "has_conclusion": false
+        },
+        "engagement": {
+          "score": 50,
+          "questions": 2,
+          "personal_pronouns": 39,
+          "examples": 1,
+          "action_verbs": 0,
+          "emotional_words": 1,
+          "lists": 22
+        },
+        "structure": {
+          "score": 10,
+          "template_match": 0,
+          "sections_complete": false,
+          "template_sections_count": 18,
+          "article_sections_count": 0,
+          "has_proper_h1": false
+        },
+        "factual": {
+          "score": 12,
+          "reference_citations": 0,
+          "keyword_overlap": 4,
+          "reference_keywords_found": [
+            "brief",
+            "details",
+            "https",
+            "tools"
+          ]
+        }
+      }
+    },
+    {
+      "stage": "llmon",
+      "approved": true,
+      "timestamp": "2025-10-29T17:19:09.080810",
+      "quality_scores": {
+        "overall_score": 60.7,
+        "readability": {
+          "score": 45.3,
+          "grade_level": 11.9,
+          "complexity": "moderate",
+          "avg_word_length": 5.5,
+          "avg_sentence_length": 19.2,
+          "flesch_score": 45.3
+        },
+        "seo": {
+          "score": 80,
+          "word_count": 1900,
+          "headings_count": 13,
+          "h1_count": 1,
+          "h2_count": 12,
+          "h3_count": 0,
+          "keywords": [
+            "relume",
+            "that",
+            "your",
+            "with",
+            "claritee"
+          ],
+          "has_intro": false,
+          "has_conclusion": false
+        },
+        "engagement": {
+          "score": 82,
+          "questions": 5,
+          "personal_pronouns": 72,
+          "examples": 4,
+          "action_verbs": 4,
+          "emotional_words": 6,
+          "lists": 22
+        },
+        "structure": {
+          "score": 73,
+          "template_match": 72,
+          "sections_complete": false,
+          "template_sections_count": 18,
+          "article_sections_count": 12,
+          "has_proper_h1": true
+        },
+        "factual": {
+          "score": 15,
+          "reference_citations": 0,
+          "keyword_overlap": 5,
+          "reference_keywords_found": [
+            "brief",
+            "details",
+            "https",
+            "source",
+            "tools"
+          ]
+        }
+      }
+    },
+    {
+      "stage": "editor",
+      "approved": true,
+      "timestamp": "2025-10-29T17:21:48.917917",
+      "quality_scores": {
+        "overall_score": 60.7,
+        "readability": {
+          "score": 45.2,
+          "grade_level": 12.1,
+          "complexity": "challenging",
+          "avg_word_length": 5.4,
+          "avg_sentence_length": 19.5,
+          "flesch_score": 45.2
+        },
+        "seo": {
+          "score": 80,
+          "word_count": 1934,
+          "headings_count": 13,
+          "h1_count": 1,
+          "h2_count": 12,
+          "h3_count": 0,
+          "keywords": [
+            "relume",
+            "that",
+            "your",
+            "with",
+            "claritee"
+          ],
+          "has_intro": false,
+          "has_conclusion": false
+        },
+        "engagement": {
+          "score": 82,
+          "questions": 3,
+          "personal_pronouns": 72,
+          "examples": 4,
+          "action_verbs": 4,
+          "emotional_words": 6,
+          "lists": 24
+        },
+        "structure": {
+          "score": 73,
+          "template_match": 72,
+          "sections_complete": false,
+          "template_sections_count": 18,
+          "article_sections_count": 12,
+          "has_proper_h1": true
+        },
+        "factual": {
+          "score": 15,
+          "reference_citations": 0,
+          "keyword_overlap": 5,
+          "reference_keywords_found": [
+            "brief",
+            "details",
+            "https",
+            "source",
+            "tools"
+          ]
+        }
+      }
     }
   ],
-  "rejection_patterns": {
-    "writer": [
-      "If you're going to write citations like \"according to Miquido UI/UX Trends\" then make sure to include the actual link as a hyperlink to the word \"Miquido UI/UX Trends\"",
-      "the references.md file already has all the sources and references you need for citations so why are you hallucinating and putting links that do not exist?",
-      "If you're going to write citations like \\\"according to Miquido UI/UX Trends\\\" then make sure to include the actual link as a hyperlink to the word \\\"Miquido UI/UX Trends\\\"\","
-    ]
-  },
+  "rejection_patterns": {},
   "session_stats": {
-    "writer_feedback_count": 3,
-    "writer_rejections": 3
+    "writer_approvals": 4,
+    "llmon_approvals": 2,
+    "editor_approvals": 2
   }
 }

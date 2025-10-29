@@ -26,6 +26,14 @@ class Config:
     OUTPUTS_DIR = 'outputs'
     MEMORY_DIR = 'memory'
     
+    # Content Mode Selection
+    CONTENT_MODE = os.getenv('CONTENT_MODE', 'article')  # 'article' or 'tool_review'
+    
+    # Tool Review Settings
+    TOOL_REVIEW_MIN_QUOTES = 6
+    TOOL_REVIEW_MAX_QUOTES = 10
+    TOOL_REVIEW_TARGET_WORDS = (900, 1400)  # soft range
+    
     # Agent Settings
     WRITER_TEMPERATURE = 0.7
     LLMON_TEMPERATURE = 0.8  # Higher for more variation
@@ -76,9 +84,9 @@ class Config:
                     f"Missing OpenAI model configuration(s): {', '.join(missing_models)}\n"
                     "Please add all three model configurations to your .env file:\n"
                     "Example:\n"
-                    "  OPENAI_WRITER_MODEL=gpt-5-nano\n"
-                    "  OPENAI_LLMON_MODEL=gpt-4o-mini\n"
-                    "  OPENAI_EDITOR_MODEL=gpt-4.1-mini"
+                    "  OPENAI_WRITER_MODEL=gpt-5-mini\n"
+                    "  OPENAI_LLMON_MODEL=gpt-5-mini\n"
+                    "  OPENAI_EDITOR_MODEL=gpt-5-mini"
                 )
         elif cls.AI_PROVIDER == 'gemini':
             if not cls.GEMINI_API_KEY:

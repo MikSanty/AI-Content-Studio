@@ -121,7 +121,13 @@ Generate the COMPLETE transformed article now:"""
         if not rules:
             raise ValueError("LLMON rules file is missing or empty")
         
-        # Use ThreadPoolExecutor for parallel API calls
+        # Check if using Gemini - if so, use sequential to avoid safety filter issues
+        from config import Config
+        if Config.AI_PROVIDER == 'gemini':
+            print("[INFO] Using sequential generation for Gemini (more reliable)")
+            return self._generate_variations_sequential(article, rules, differentiator)
+        
+        # Use ThreadPoolExecutor for parallel API calls (OpenAI only)
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.versions_count) as executor:
             # Submit all variation generation tasks
             futures = []
@@ -261,5 +267,123 @@ Generate the COMPLETE transformed article now:"""
                     validation = differentiator.validate_variations(variations)
         
         return variations
+    
+    def _generate_variations_sequential(self, article, rules, differentiator=None):
+        """
+        Generate variations sequentially (for Gemini compatibility).
+        
+        Args:
+            article: The article to transform
+            rules: Rules text
+            differentiator: Optional VariationDifferentiator instance
+        
+        Returns:
+            List of article variations
+        """
+        from config import Config
+        variations = []
+        
+        for i in range(1, self.versions_count + 1):
+            variation = self._generate_single_variation(article, rules, i)
+            variations.append(variation)
+        
+        # Validate differentiation if differentiator provided
+        if differentiator and Config.ENABLE_VARIATION_VALIDATION:
+            validation = differentiator.validate_variations(variations)
+            
+            # If variations are too similar, regenerate problematic ones
+            max_retries = 2
+            retry_count = 0
+            
+            while not validation['valid'] and retry_count < max_retries:
+                retry_count += 1
+                
+                # Identify which variation to regenerate
+                suggestion = differentiator.suggest_regeneration(variations)
+                if suggestion is not None:
+                    # Regenerate with stronger emphasis
+                    var_num = suggestion + 1
+                    variations[suggestion] = self._generate_single_variation(
+                        article, rules, var_num, stronger_emphasis=True
+                    )
+                    
+                    # Re-validate
+                    validation = differentiator.validate_variations(variations)
+        
+        return variations
+    
+    def generate_variations_tool_review(self, article, rules_path, differentiator=None):
+        """
+        Generate variations for tool reviews with special preservation rules.
+        
+        Args:
+            article: The tool review to transform
+            rules_path: Path to tool review variation rules
+            differentiator: Optional VariationDifferentiator instance
+        
+        Returns:
+            List of tool review variations
+        """
+        from utils import read_file
+        from config import Config
+        
+        # Load tool review-specific rules
+        rules = read_file(rules_path)
+        if not rules:
+            raise ValueError(f"Could not load tool review rules from {rules_path}")
+        
+        # Check if using Gemini - if so, use sequential to avoid safety filter issues
+        if Config.AI_PROVIDER == 'gemini':
+            print("[INFO] Using sequential generation for Gemini (more reliable)")
+            return self._generate_variations_sequential(article, rules, differentiator)
+        
+        # Use parallel generation for OpenAI
+        if Config.ENABLE_PARALLEL_VARIATIONS:
+            # Use ThreadPoolExecutor for parallel API calls
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.versions_count) as executor:
+                # Submit all variation generation tasks
+                futures = []
+                for i in range(1, self.versions_count + 1):
+                    future = executor.submit(
+                        self._generate_single_variation,
+                        article, rules, i
+                    )
+                    futures.append(future)
+                
+                # Collect results
+                variations = []
+                for future in concurrent.futures.as_completed(futures):
+                    try:
+                        variation = future.result()
+                        variations.append(variation)
+                    except Exception as e:
+                        raise Exception(f"Parallel generation error: {str(e)}")
+            
+            # Validate differentiation if differentiator provided
+            if differentiator and Config.ENABLE_VARIATION_VALIDATION:
+                validation = differentiator.validate_variations(variations)
+                
+                # If variations are too similar, regenerate problematic ones
+                max_retries = 2
+                retry_count = 0
+                
+                while not validation['valid'] and retry_count < max_retries:
+                    retry_count += 1
+                    
+                    # Identify which variation to regenerate
+                    suggestion = differentiator.suggest_regeneration(variations)
+                    if suggestion is not None:
+                        # Regenerate with stronger emphasis
+                        var_num = suggestion + 1
+                        variations[suggestion] = self._generate_single_variation(
+                            article, rules, var_num, stronger_emphasis=True
+                        )
+                        
+                        # Re-validate
+                        validation = differentiator.validate_variations(variations)
+            
+            return variations
+        else:
+            return self._generate_variations_sequential(article, rules, differentiator)
 
 

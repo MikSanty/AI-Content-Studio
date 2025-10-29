@@ -4,6 +4,110 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v3.2] - Citation Validator & Enhanced Memory - October 29, 2025
+
+### 🎯 Overview
+Added comprehensive citation validation system and enhanced workflow memory to ensure proper source hyperlinking and learn from citation-related feedback.
+
+### ✨ New Features
+
+**Citation Validation System:**
+- `citation_validator.py` - Comprehensive validation utility
+- Extracts all URLs from reference materials
+- Detects unlinked citations (e.g., "according to Source" without hyperlink)
+- Identifies hallucinated/invented URLs not in references
+- Generates detailed validation reports
+
+**Enhanced Workflow Memory:**
+- Detects citation-related feedback patterns
+- Automatically adds citation reminders to writer agent context
+- Learns from repeated citation issues
+- Provides critical hyperlink requirements when patterns detected
+
+**Writer Agent Improvements:**
+- Enhanced citation requirements in all prompts
+- Explicit hyperlink format examples (correct ✓ vs incorrect ✗)
+- URL verification checklist in generation prompts
+- Citation validation integrated into workflow
+
+### 🔧 Changes Made
+
+**New Files:**
+- `citation_validator.py` - Citation validation utility
+- `test_citation_validator.py` - Unit tests for validator
+
+**Files Modified:**
+- `workflow_memory.py` - Added `_detect_citation_issues()` method
+- `workflow.py` - Integrated citation validation after writer stage
+- `agents/writer_agent.py` - Enhanced citation requirements in all prompts
+- `templates/writer_prompt.md` - Added citation and source linking section
+
+**Key Detection Patterns:**
+- "according to [Source]" without hyperlink
+- "as noted/highlighted/reported by [Source]" without link
+- "[Source: X]" without hyperlink
+- URLs not found in reference materials
+
+### 💡 Benefits
+- **Quality Assurance** - Prevents missing hyperlinks before they reach users
+- **Learning System** - Memory adapts to repeated citation feedback
+- **Professional Output** - Ensures all sources are properly linked
+- **SEO Improvement** - Better linking practices improve search rankings
+
+---
+
+## [v3.1] - Tool Review Mode - October 29, 2025
+
+### 🎯 Overview
+Added specialized content mode for generating professional, story-driven tool/software reviews with strict formatting requirements and evidence-based structure.
+
+### ✨ New Features
+
+**Tool Review Content Mode:**
+- Dedicated templates for tool review briefs
+- Specialized agent rules for review content
+- First-person, story-driven narrative voice
+- Required 6-10 user quotes with exact URLs
+- Detailed pricing breakdowns and scaling information
+- Conditional framing for different audience types
+
+**Content Mode Detection:**
+- `CONTENT_MODE` configuration variable
+- Auto-detection based on template file usage
+- Mode-specific template and rules loading
+- Clear mode display on workflow startup
+
+**New Templates & Rules:**
+- `templates/tool_review_brief.md` - Tool review input template
+- `templates/tool_review_structure.md` - Review section structure
+- `templates/tool_review_writer_prompt.md` - Review-specific writer instructions
+- `rules/llmon_tool_review_rules.md` - Review variation guidelines
+- `rules/editor_tool_review_rules.md` - Review polishing standards
+
+**Example Files:**
+- `examples/example_tool_review_brief.md` - Complete tool review example
+- `examples/example_tool_review_output.md` - Sample generated review
+
+### 🔧 Changes Made
+
+**Files Modified:**
+- `config.py` - Added `CONTENT_MODE` setting and mode detection
+- `workflow.py` - Mode-aware template and rules loading
+- `agents/writer_agent.py` - Mode-specific template selection
+- `agents/llmon_agent.py` - Mode-specific rules loading
+- `agents/editor_agent.py` - Mode-specific rules and validation
+
+**Documentation Created:**
+- `docs/guides/TOOL_REVIEW_MODE.md` - Comprehensive tool review guide
+
+### 💡 Benefits
+- **Specialized Content** - Purpose-built for software/tool reviews
+- **Evidence-Based** - Requires real user quotes and detailed pricing
+- **Flexible System** - Easy switching between article and review modes
+- **Professional Output** - Follows best practices of top review sites
+
+---
+
 ## [v3.0] - Multi-Model OpenAI Support - October 14, 2025
 
 ### 🎯 Overview

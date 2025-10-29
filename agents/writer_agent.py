@@ -2,6 +2,7 @@
 from api_client import APIClient
 from config import Config
 from utils import read_file
+import os
 
 class WriterAgent:
     """Agent 1: Generates initial article draft."""
@@ -13,6 +14,7 @@ class WriterAgent:
         self.client = APIClient(model=model)
         self.temperature = Config.WRITER_TEMPERATURE
         self.last_outline = None  # Store outline for reference
+        self.content_mode = None  # Will be detected from manual file
     
     def generate_draft(self, manual_path, template_path, references_path, prompt_path):
         """
@@ -284,5 +286,267 @@ Generate the COMPLETE article now:"""
         # Generate article
         article = self.client.generate_content(writing_prompt, self.temperature)
         return article
+    
+    def _detect_content_mode(self, manual_path):
+        """
+        Detect content mode from manual file.
+        
+        Args:
+            manual_path: Path to manual/brief file
+        
+        Returns:
+            'tool_review' or 'article'
+        """
+        # First check config
+        if Config.CONTENT_MODE == 'tool_review':
+            return 'tool_review'
+        
+        # Try to detect from file name
+        if 'tool_review' in os.path.basename(manual_path).lower():
+            return 'tool_review'
+        
+        # Try to detect from content
+        try:
+            manual_content = read_file(manual_path)
+            if manual_content:
+                # Look for tool review markers
+                markers = [
+                    'Pre-Writing Interview Questions',
+                    'Target Audience',
+                    'Reader Motivation',
+                    'Collected Quotes',
+                    'Tool Information'
+                ]
+                if any(marker in manual_content for marker in markers):
+                    return 'tool_review'
+        except:
+            pass
+        
+        return 'article'
+    
+    def generate_draft_tool_review(self, manual_path, template_path, references_path, prompt_path):
+        """
+        Generate tool review draft.
+        
+        Args:
+            manual_path: Path to tool_review_brief.md
+            template_path: Path to tool_review_structure.md
+            references_path: Path to references.md (not used for tool reviews)
+            prompt_path: Path to tool_review_writer_prompt.md
+        
+        Returns:
+            Generated tool review as string
+        """
+        # Load input files
+        brief = read_file(manual_path)
+        structure = read_file(template_path)
+        prompt_instructions = read_file(prompt_path)
+        
+        if not all([brief, structure, prompt_instructions]):
+            raise ValueError("One or more required tool review input files are missing or empty")
+        
+        # Construct the prompt
+        full_prompt = f"""You are a professional tool review writer. Your task is to create a complete, story-driven tool review.
+
+{prompt_instructions}
+
+# TOOL REVIEW STRUCTURE TEMPLATE
+{structure}
+
+# TOOL REVIEW BRIEF (Your Source Material)
+{brief}
+
+# YOUR TASK
+Using the structure template and the brief provided:
+1. Write a complete tool review following the required structure exactly
+2. Answer the 4 pre-writing questions to understand context and audience
+3. Integrate all 6-10 collected quotes naturally into the narrative
+4. Use story-driven, first-person narrative throughout
+5. Apply conditional framing ("If you're X... if you're Y...")
+6. Provide honest pros, cons, and fit guidance
+7. Include all product details (pricing, implementation, migration)
+8. Create Sources appendix with all quote URLs at the end
+
+# CRITICAL REMINDERS
+- Use ONLY quotes from the brief (6-10 minimum)
+- Place quote URLs in Sources appendix, NOT inline
+- No em dashes anywhere
+- No parenthetical text in headers
+- No divider lines
+- Target 900-1,400 words (soft range)
+- First-person voice required
+
+Generate the complete tool review now:"""
+
+        # Generate review
+        review = self.client.generate_content(full_prompt, self.temperature)
+        return review
+    
+    def generate_outline_tool_review(self, manual_path, template_path, references_path, prompt_path, historical_context=""):
+        """
+        Generate tool review outline.
+        
+        Args:
+            manual_path: Path to tool_review_brief.md
+            template_path: Path to tool_review_structure.md
+            references_path: Path to references.md (not used)
+            prompt_path: Path to tool_review_writer_prompt.md
+            historical_context: Optional context from workflow memory
+        
+        Returns:
+            Generated outline as string
+        """
+        # Load input files
+        brief = read_file(manual_path)
+        structure = read_file(template_path)
+        prompt_instructions = read_file(prompt_path)
+        
+        if not all([brief, structure, prompt_instructions]):
+            raise ValueError("One or more required tool review input files are missing or empty")
+        
+        # Construct outline prompt
+        outline_prompt = f"""You are a professional tool review strategist. Your task is to create a detailed outline for a tool review.
+
+{prompt_instructions}
+
+# TOOL REVIEW STRUCTURE TEMPLATE
+{structure}
+
+# TOOL REVIEW BRIEF (Your Source Material)
+{brief}"""
+
+        if historical_context:
+            outline_prompt += f"""
+
+# HISTORICAL CONTEXT (User Preferences)
+{historical_context}"""
+
+        outline_prompt += """
+
+# YOUR TASK
+Create a comprehensive tool review outline that:
+1. Follows the required structure exactly
+2. Addresses the 4 pre-writing questions (title, audience, motivation, benefit)
+3. Plans where each of the 6-10 quotes will be used
+4. Maps out the "How I Use [Tool]" narrative
+5. Identifies conditional framing callouts (2-4 minimum)
+6. Structures pricing breakdown with scaling details
+7. Plans comparative guidance and exclusion criteria
+8. Outlines pros, cons, and fit analysis
+
+Format the outline with:
+- Clear section headings (## for main sections)
+- Bullet points for key content under each section
+- [QUOTE: #] tags to indicate which quote to use where
+- [CONDITIONAL: ...] tags for "If you're X... if you're Y..." callouts
+- [PRICING: ...] tags for specific pricing details to include
+- [COMPARISON: ...] tags for comparative guidance
+
+# CRITICAL PLANNING
+For each quote in the brief:
+- Plan which section it will appear in
+- Note how it will be integrated naturally
+- Remember all quote URLs go in Sources appendix only
+
+Generate the detailed tool review outline now:"""
+
+        # Generate outline
+        outline = self.client.generate_content(outline_prompt, self.temperature)
+        self.last_outline = outline
+        self.content_mode = 'tool_review'
+        return outline
+    
+    def revise_outline_tool_review(self, original_outline, feedback):
+        """
+        Revise tool review outline based on feedback.
+        
+        Args:
+            original_outline: The original outline
+            feedback: User's revision feedback
+        
+        Returns:
+            Revised outline
+        """
+        revision_prompt = f"""You are a professional tool review strategist revising an outline based on feedback.
+
+# ORIGINAL OUTLINE
+{original_outline}
+
+# REVISION FEEDBACK
+{feedback}
+
+# YOUR TASK
+Revise the outline to address the feedback while maintaining:
+1. Required tool review structure
+2. Quote placement planning
+3. Conditional framing callouts
+4. Pricing and product detail planning
+5. Story-driven narrative structure
+
+Generate the COMPLETE revised outline now:"""
+
+        revised_outline = self.client.generate_content(revision_prompt, self.temperature)
+        self.last_outline = revised_outline
+        return revised_outline
+    
+    def write_from_outline_tool_review(self, outline, manual_path, template_path, references_path, prompt_path):
+        """
+        Generate tool review from approved outline.
+        
+        Args:
+            outline: Approved tool review outline
+            manual_path: Path to tool_review_brief.md
+            template_path: Path to tool_review_structure.md
+            references_path: Path to references.md (not used)
+            prompt_path: Path to tool_review_writer_prompt.md
+        
+        Returns:
+            Generated tool review
+        """
+        # Load input files
+        brief = read_file(manual_path)
+        structure = read_file(template_path)
+        prompt_instructions = read_file(prompt_path)
+        
+        # Construct writing prompt
+        writing_prompt = f"""You are a professional tool review writer. Your task is to write a complete tool review based on an approved outline.
+
+{prompt_instructions}
+
+# APPROVED OUTLINE
+{outline}
+
+# TOOL REVIEW STRUCTURE TEMPLATE
+{structure}
+
+# TOOL REVIEW BRIEF (Your Source Material)
+{brief}
+
+# YOUR TASK
+Write a complete tool review that:
+1. Follows the approved outline exactly
+2. Expands each section with well-written, flowing prose
+3. Integrates the specific quotes noted in the outline
+4. Uses story-driven, first-person narrative throughout
+5. Applies conditional framing as planned
+6. Includes all product details (pricing, implementation, migration)
+7. Maintains a personable, colleague-to-colleague tone
+8. Creates Sources appendix with all quote URLs
+
+# CRITICAL REQUIREMENTS
+- Use ONLY quotes from the brief
+- Place ALL quote URLs in Sources appendix at the end
+- NO inline quote links in the article body
+- NO em dashes anywhere
+- NO parenthetical text in headers
+- NO divider lines
+- Target 900-1,400 words (soft range)
+- First-person voice required
+
+Generate the COMPLETE tool review now:"""
+
+        # Generate review
+        review = self.client.generate_content(writing_prompt, self.temperature)
+        return review
 
 
